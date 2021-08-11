@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import { connect } from 'react-redux';
 import { restartGame, resetGame, addMove, goHistory, updateScore, setDraw } from './store/actions';
 import './App.css'
@@ -12,8 +13,10 @@ export class App extends React.Component {
     const checkWinner = (moves, i, index) => {
       this.props.addMove({ rowCol: i * 3 + index, item: moveCount % 2 === 0 ? "x" : "o", move: moveCount });
 
-      //axios
-
+      axios.post('http:// 209.250.251.187/api/v1/task', { "action": `Move triggered(${moveCount % 2 === 0 ? 'X' : 'O'}) (${i},${index})` })
+        .then(response => {
+          alert(response.status + " : " + response.message);
+        })
 
       const lines = [
         [0, 1, 2],
@@ -34,7 +37,7 @@ export class App extends React.Component {
       }
     };
     return (
-      <div className="app">
+      <div className="app" >
         <div className="row">
           <button className="button"
             disabled={this.props.game.score.x === 0 && this.props.game.score.o === 0}
@@ -90,7 +93,7 @@ export class App extends React.Component {
 
             </div>
             : null}
-      </div>
+      </div >
     );
   }
 }
