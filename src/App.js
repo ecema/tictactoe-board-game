@@ -59,10 +59,10 @@ export class App extends React.Component {
 
       this.props.addMove({ rowCol: i * 3 + index, item: getMoveCount() % 2 === 0 || this.props.game.versusAI ? "x" : "o", move: getMoveCount() });
 
-      // axios.post('http:// 209.250.251.187/api/v1/task', { "action": `Move triggered(${moveCount % 2 === 0 ? 'X' : 'O'}) (${i},${index})` })
-      //   .then(response => {
-      //     alert(response.status + " : " + response.message);
-      //   })
+      axios.post('http:// 209.250.251.187/api/v1/task', { "action": `Move triggered(${getMoveCount() % 2 === 0 ? 'O' : 'X'}) (${i},${index})` })
+        .then(response => {
+          alert(response.status + " : " + response.message);
+        })
 
       if (!this.props.game.versusAI) {
         check(moves)
