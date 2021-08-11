@@ -1,17 +1,20 @@
-.App {
+
+.app {
   text-align: center;
-  justify-content: center;
   align-items: center;
   display: flex;
   flex-direction: column;
-  padding: 50px;
+  background-color: #FFEEDB;
+  min-height: 100vh;
+  
 }
 table {
   border-collapse: collapse;
+  margin-top: 20px;
 }
 table td {
   min-width: 150px;
-  border: 7px solid rgb(175, 20, 20); 
+  border: 7px solid #A53860; 
 }
 table tr {
   height: 150px;
@@ -30,5 +33,51 @@ table tr td:last-child {
 }
 .input {
   font-size: 56px;
+  font-weight: 800;
+  color:#61C9A8;
+}
+.winner-input {
+  font-size: 56px;
   font-weight: 900;
+  color:#0e966b;
+}
+
+.history-button {
+  background-color:#49074C;
+  border: none;
+  color: white;
+  padding: 15px 12px;
+  text-align: center;
+  text-decoration: none;
+  margin: 15px;
+  font-size: 16px;
+  border-radius: 5px;
+  color: #FFEEDB;
+  font-weight: 600;
+}
+.button {
+  background-color:#A53860;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 5px;
+  color: #FFEEDB;
+  font-weight: 600;
+  margin-top: 10px;
+}
+.button:disabled {
+  background-color:#c0547b;
+}
+.row {
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+}
+.text {
+  font-size: 24px;
+  font-weight: 600;
+  color: #49074C;
 }
