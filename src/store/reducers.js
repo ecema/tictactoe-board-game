@@ -7,20 +7,11 @@ const initialState =
   score: { x: 0, o: 0 },
   endGame: false,
   isDraw: false,
+  versusAI: false
 }
 
 export const game = (state = initialState, action) => {
   switch (action.type) {
-    case 'RESTART_GAME':
-      return {
-        ...state,
-        moves: ["", "", "", "", "", "", "", "", ""],
-        history: [],
-        winnerLine: [],
-        endGame: false,
-        isDraw: false
-      }
-
     case 'ADD_MOVE':
       let modified = state.moves
       let modifiedHistory = state.history
@@ -31,11 +22,13 @@ export const game = (state = initialState, action) => {
     case 'SET_DRAW':
       return { ...state, isDraw: true, endGame: true }
 
+    case 'SET_OPTION':
+      return { ...state, versusAI: !state.versusAI }
+
     case 'UPDATE_SCORE':
       let score = state.score
       score[action.item.winnerKey] = score[action.item.winnerKey] + 1
       return { ...state, winnerLine: action.item.winnerLine, score: score, isDraw: false, endGame: true }
-
 
     case 'GO_HISTORY':
       let some = state.moves
@@ -44,6 +37,16 @@ export const game = (state = initialState, action) => {
         if (!someHistory.slice(0, action.item.index + 1).includes(i)) some[i] = ""
       });
       return { ...state, history: someHistory.slice(0, action.item.index + 1) }
+
+    case 'RESTART_GAME':
+      return {
+        ...state,
+        moves: ["", "", "", "", "", "", "", "", ""],
+        history: [],
+        winnerLine: [],
+        endGame: false,
+        isDraw: false
+      }
 
     case 'RESET_GAME':
       return {

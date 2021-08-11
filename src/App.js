@@ -1,40 +1,78 @@
 import React from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
-import { restartGame, resetGame, addMove, goHistory, updateScore, setDraw } from './store/actions';
+import { restartGame, resetGame, addMove, goHistory, updateScore, setDraw, setOption } from './store/actions';
 import './App.css'
 
 export class App extends React.Component {
 
   render() {
+
     let items = [[1, 2, 3], [1, 2, 3], [1, 2, 3]];
-    let moveCount = this.props.game.history.length;
+    const lines = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
 
-    const checkWinner = (moves, i, index) => {
-      this.props.addMove({ rowCol: i * 3 + index, item: moveCount % 2 === 0 ? "x" : "o", move: moveCount });
+    const getMoveCount = () => {
+      return this.props.game.history.length;
+    }
 
-      axios.post('http:// 209.250.251.187/api/v1/task', { "action": `Move triggered(${moveCount % 2 === 0 ? 'X' : 'O'}) (${i},${index})` })
-        .then(response => {
-          alert(response.status + " : " + response.message);
-        })
+    const ai = (moves) => {
+      for (let i = 0; i < lines.length; i += 1) {
+        const [a, b, c] = lines[i];
+        if (moves[a] === "" && moves[b] === "x" && moves[c] === "x") {
+          this.props.addMove({ rowCol: a, item: "o", move: getMoveCount() });
+          return
+        } else if (moves[a] === "x" && moves[b] === "" && moves[c] === "x") {
+          this.props.addMove({ rowCol: b, item: "o", move: getMoveCount() });
+          return
+        } else if (moves[a] === "x" && moves[b] === "x" && moves[c] === "") {
+          this.props.addMove({ rowCol: c, item: "o", move: getMoveCount() });
+          return
+        }
+      }
 
-      const lines = [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
-        [0, 3, 6],
-        [1, 4, 7],
-        [2, 5, 8],
-        [0, 4, 8],
-        [2, 4, 6],
-      ];
+      for (let i = 0; i < moves.length; i += 1) {
+        if (moves[i] === "") {
+          this.props.addMove({ rowCol: i, item: "o", move: getMoveCount() });
+          return
+        }
+      }
 
+    }
+    const check = (moves) => {
       for (let i = 0; i < lines.length; i += 1) {
         const [a, b, c] = lines[i];
         if (moves[a] && moves[a] === moves[b] && moves[a] === moves[c])
           this.props.updateScore({ winnerKey: moves[a], winnerLine: lines[i] })
-        else if (moveCount === 8) this.props.setDraw();
+        else if (getMoveCount() === 8) this.props.setDraw();
       }
+    }
+    const checkWinner = (moves, i, index) => {
+
+      this.props.addMove({ rowCol: i * 3 + index, item: getMoveCount() % 2 === 0 || this.props.game.versusAI ? "x" : "o", move: getMoveCount() });
+
+      // axios.post('http:// 209.250.251.187/api/v1/task', { "action": `Move triggered(${moveCount % 2 === 0 ? 'X' : 'O'}) (${i},${index})` })
+      //   .then(response => {
+      //     alert(response.status + " : " + response.message);
+      //   })
+
+      if (!this.props.game.versusAI) {
+        check(moves)
+      } else {
+        setTimeout(function () {
+          ai(moves);
+          check(moves)
+        }, 200)
+      }
+
     };
     return (
       <div className="app" >
@@ -45,16 +83,21 @@ export class App extends React.Component {
               this.props.resetGame()
             }
           >
-            Reset Game
+            Reset Score
           </button>
           <button className="button"
-            disabled={moveCount === 0}
+            disabled={getMoveCount() === 0}
             onClick={() =>
               this.props.restartGame()
             }
           >
             {this.props.game.isDraw ? "DRAW - " : null}
-            Restart
+            Restart Game
+          </button>
+          <button className="button"
+            onClick={() => { this.props.setOption(); this.props.restartGame(); }}
+          >
+            {this.props.game.versusAI ? "Two Players" : "Versus AI"}
           </button>
         </div>
 
@@ -81,7 +124,7 @@ export class App extends React.Component {
           </tbody>
         </table>
         {
-          moveCount > 0 ?
+          getMoveCount() > 0 ?
             <div>
               <div className="row">
                 <span className="text">Go to move # </span>
@@ -108,7 +151,8 @@ const mapDispatchToProps = {
   addMove,
   goHistory,
   updateScore,
-  setDraw
+  setDraw,
+  setOption
 };
 
 const AppContainer = connect(
